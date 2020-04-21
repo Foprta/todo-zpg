@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
-	"server/server/controllers"
+	"github.com/Foprta/todo-zpg/server/server/controllers"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -21,6 +21,7 @@ func Run() {
 
 	server.connectToDB()
 	server.loadRoutes()
+	server.Router.Use(CORS)
 
 	http.ListenAndServe(":80", server.Router)
 }
@@ -36,5 +37,19 @@ func (s *Server) connectToDB() {
 
 func (s *Server) loadRoutes() {
 	s.Router = mux.NewRouter()
-	controllers.LoadRoutes(s.Router);
+	controllers.LoadRoutes(s.Router)
+}
+
+func CORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		
+		next.ServeHTTP(w, r)
+		return
+	})
 }

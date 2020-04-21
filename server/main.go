@@ -1,7 +1,7 @@
 package main
 
 import (
-	"server/server"
+	"github.com/Foprta/todo-zpg/server/server"
 )
 
 func main() {
