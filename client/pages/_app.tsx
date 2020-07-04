@@ -4,9 +4,14 @@ import { Provider } from "react-redux";
 import withRedux from "next-redux-wrapper";
 import { makeStore } from "../store";
 import { Store } from "redux";
-import Axios from "axios";
+import { ThemeProvider, withStyles } from "@material-ui/core/styles";
+import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
+import globalStyles, { themeColors } from "../utils/theme";
+import { parseCookies } from "nookies";
+import { getCurrentUser } from "../store/users/actions/user";
+import securedAxios, { addAuthHeader } from "../utils/axios";
 
-Axios.defaults.baseURL = "http://172.18.0.3:80";
+const theme = createMuiTheme(themeColors);
 
 interface Props {
   store: Store;
@@ -14,6 +19,15 @@ interface Props {
 
 export class MyApp extends App<Props> {
   static async getInitialProps({ Component, ctx }) {
+    if (ctx.isServer) {
+      const { token } = parseCookies(ctx);
+      console.log(token);
+      if (token) {
+        addAuthHeader(token);
+        await ctx.store.dispatch(getCurrentUser());
+      }
+    }
+
     let pageProps = {};
 
     if (Component.getInitialProps) {
@@ -23,14 +37,24 @@ export class MyApp extends App<Props> {
     return { pageProps };
   }
 
+  UNSAFE_componentWillMount() {
+    // FIXME: how to addAuthToken properly?
+    const { token } = parseCookies();
+    if (token) {
+      addAuthHeader(token);
+    }
+  }
+
   render() {
     const { Component, pageProps, store } = this.props;
     return (
-      <Provider store={store}>
-        <Component {...pageProps} />
-      </Provider>
+      <ThemeProvider theme={theme}>
+        <Provider store={store}>
+          <Component {...pageProps} />
+        </Provider>
+      </ThemeProvider>
     );
   }
 }
 
-export default withRedux(makeStore)(MyApp);
+export default withRedux(makeStore)(withStyles(globalStyles)(MyApp));

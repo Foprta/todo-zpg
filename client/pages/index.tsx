@@ -1,32 +1,30 @@
 import React, { Component } from "react";
-import { getText } from "../store/actions/api";
 import { connect } from "react-redux";
-import Header from "../components/Header";
+import WelcomeScreen from "../components/WelcomeScreen";
+import { IUser } from "../store/users/reducers/user";
+import Layout from "../components/Layout";
 
 interface Props {
-  text?: string;
+  classes: Record<string, any>;
+  token: string;
+  user: IUser;
+  getTasks: Function;
 }
 
 export class Index extends Component<Props> {
-  static async getInitialProps({ store }) {
-    const { text } = await store.dispatch(getText());
-    return { text };
-  }
+  static async getInitialProps(ctx) {}
 
   render() {
-    return (
-      <div>
-        Hello Next.js {this.props.text}
-        <Header />
-      </div>
-    );
+    const { user } = this.props;
+
+    return user ? <Layout /> : <WelcomeScreen />;
   }
 }
 
-const mapDispatchToProps = { getText };
+const mapDispatchToProps = {};
 
 const mapStateToProps = (state: any) => ({
-  text: state.api.text,
+  user: state.users.user.user,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

@@ -15,6 +15,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    env_file: ./server/env.conf
     links:
       - db
     depends_on:
@@ -39,5 +40,7 @@ services:
       - 3000:3000
     expose:
       - 3000
+    extra_hosts:
+      - "api.todo-zpg.com:172.18.0.3"
     volumes:
       - ./client:/usr/src/client
