@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/Foprta/todo-zpg/server/server/auth"
 	"github.com/Foprta/todo-zpg/server/server/models/tasks"
-	// "github.com/gorilla/mux"
-	// "github.com/jinzhu/gorm"
+	"github.com/gorilla/mux"
 )
 
 func (s *Server) CreateTodo(w http.ResponseWriter, r *http.Request) {
@@ -31,6 +31,20 @@ func (s *Server) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) DeleteTodo(w http.ResponseWriter, r *http.Request) {
+	if userID, err := auth.ExtractTokenID(r); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, err.Error())
+		return
+	} else {
+		vars := mux.Vars(r)
+		todo := &tasks.ToDo{IsDone: false, UserID: userID}
+		todoID, _ := strconv.ParseUint(vars["id"], 10, 32)
+		todo.ID = uint(todoID)
+		todo.Delete(s.DB)
+	}
+}
+
 func (s *Server) GetTodos(w http.ResponseWriter, r *http.Request) {
 	var userID uint
 	var err error
@@ -48,7 +62,6 @@ func (s *Server) GetTodos(w http.ResponseWriter, r *http.Request) {
 	}
 	res, _ := json.Marshal(foundTodos)
 	fmt.Fprintf(w, string(res))
-
 }
 
 func (s *Server) SetTodoState(w http.ResponseWriter, r *http.Request) {

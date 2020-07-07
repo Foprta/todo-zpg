@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import { changeTodoState } from "../store/tasks/actions/todo";
+import { changeTodoState, deleteTodo } from "../store/tasks/actions/todo";
 import { connect } from "react-redux";
 import { withStyles, createStyles } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
@@ -12,8 +12,14 @@ const styles = ({ palette, breakpoints }) =>
       position: "relative",
     },
     deleteButton: {
+      cursor: "pointer",
       position: "absolute",
-      right: -10,
+      right: 10,
+      top: "50%",
+      transform: "translateY(-50%)",
+      "&:hover": {
+        backgroundColor: "rgba(0,0,0,0.1)",
+      },
     },
   });
 
@@ -27,6 +33,7 @@ export interface ITodo {
 export interface Props {
   todo: ITodo;
   changeTodoState: Function;
+  deleteTodo: Function;
   classes: any;
 }
 
@@ -45,6 +52,14 @@ export class Todo extends Component<Props> {
     });
 
     this.props.changeTodoState(ID, event.target.checked);
+  };
+
+  deleteTodo = (event) => {
+    const {
+      todo: { ID },
+    } = this.props;
+
+    this.props.deleteTodo(ID);
   };
 
   render() {
@@ -67,7 +82,7 @@ export class Todo extends Component<Props> {
           }
           label={Text}
         />
-        <CloseIcon className={classes.deleteButton} />
+        <CloseIcon onClick={this.deleteTodo} className={classes.deleteButton} />
       </div>
     );
   }
@@ -77,6 +92,7 @@ const mapStateToProps = (state) => ({});
 
 const mapDispatchToProps = {
   changeTodoState,
+  deleteTodo,
 };
 
 export default connect(

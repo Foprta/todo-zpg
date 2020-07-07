@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/Foprta/todo-zpg/server/server/middlewares"
 	"github.com/gorilla/mux"
-
 )
 
 func (s *Server) ApiV1Handlers(router *mux.Router) {
@@ -16,4 +15,5 @@ func (s *Server) ApiV1Handlers(router *mux.Router) {
 	router.HandleFunc("/todos/create", middlewares.AuthMiddleware(s.CreateTodo)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/todos/list", middlewares.AuthMiddleware(s.GetTodos)).Methods("GET", "OPTIONS")
 	router.HandleFunc("/todos", middlewares.AuthMiddleware(s.SetTodoState)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/todos/{id:[0-9]+}", middlewares.AuthMiddleware(s.DeleteTodo)).Methods("DELETE", "OPTIONS")
 }

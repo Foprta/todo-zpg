@@ -26,6 +26,15 @@ export const changeTodoState = (id: string, isDone: boolean) => (
     );
 };
 
+export const deleteTodo = (id: string) => (dispatch: Dispatch) => {
+  dispatch({ type: actions.DELETE_TODOS });
+
+  securedAxios
+    .delete(`/v1/todos/${id}`)
+    .then(() => dispatch({ type: actions.DELETE_TODOS_SUCCESS, payload: id }))
+    .catch((errors) => dispatch({ type: actions.DELETE_TODOS_ERROR, errors }));
+};
+
 export const createTodo = (text: string) => (dispatch) => {
   dispatch({ type: actions.ADD_TODOS });
 
