@@ -32,7 +32,7 @@ func (t *ToDo) Update(db *gorm.DB) error {
 	return err
 }
 
-func (t *ToDo) GetTodos(db *gorm.DB) (*[]ToDo, error) {
+func (t *ToDo) GetUserTodos(db *gorm.DB) (*[]ToDo, error) {
 	todos := []ToDo{}
 	err := db.Model(&ToDo{}).Where("user_id = ?", t.UserID).Find(&todos).Error
 	return &todos, err

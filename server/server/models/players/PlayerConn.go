@@ -43,13 +43,13 @@ func (pc *PlayerConn) sender() {
 		ui := <-pc.Player.Events.Event
 		pc.Player.DebounceEventsDeathTimer()
 		fmt.Println(pc.Player.UserID, "Msg sending")
-		player, err := json.Marshal(ui)
+		gui, err := json.Marshal(ui)
 		if err != nil {
-			fmt.Println("error marshaling player")
+			fmt.Println("error marshaling gui")
 		}
 		for index, element := range pc.ws {
 			fmt.Println(index)
-			if err := element.WriteMessage(websocket.TextMessage, player); err != nil {
+			if err := element.WriteMessage(websocket.TextMessage, gui); err != nil {
 				if pc.RemoveWs(index) {
 					return
 				}

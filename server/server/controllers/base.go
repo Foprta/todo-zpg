@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Foprta/todo-zpg/server/server/models/enemies"
+	"github.com/Foprta/todo-zpg/server/server/models/items"
 	"github.com/Foprta/todo-zpg/server/server/models/players"
 	"github.com/Foprta/todo-zpg/server/server/models/tasks"
 	"github.com/Foprta/todo-zpg/server/server/models/users"
@@ -19,5 +20,5 @@ func (s *Server) ConnectToDB() {
 	}
 	s.DB = db
 
-	s.DB.AutoMigrate(&tasks.ToDo{}, &users.User{}, &players.Player{}, &enemies.Enemy{})
+	s.DB.AutoMigrate(&tasks.ToDo{}, &users.User{}, &players.Player{}, &enemies.Enemy{}, &items.Weapon{})
 }

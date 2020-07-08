@@ -13,7 +13,7 @@ import (
 )
 
 type Player struct {
-	gorm.Model `json:"-"`
+	gorm.Model
 	UserID     uint `gorm:"not null" json:"-"`
 	Health     int
 	MaxHealth  int
@@ -48,6 +48,10 @@ func (p *Player) Create() error {
 	p.Experience = 0
 	p.State = roaming
 	return p.DB.Create(&p).Error
+}
+
+func (p *Player) Get() error {
+	return p.DB.Where("user_id = ?", p.UserID).Take(&p).Error
 }
 
 func (p *Player) Update() error {

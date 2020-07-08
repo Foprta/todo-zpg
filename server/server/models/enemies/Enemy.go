@@ -5,12 +5,12 @@ import (
 )
 
 type Enemy struct {
-	gorm.Model `json:"-"`
-	UserID     uint `gorm:"not null" json:"-"`
-	Health     int
-	MaxHealth  int
-	Level      uint
-	DB         *gorm.DB `gorm:"-" json:"-"`
+	gorm.Model
+	UserID    uint `gorm:"not null" json:"-"`
+	Health    int
+	MaxHealth int
+	Level     uint
+	DB        *gorm.DB `gorm:"-" json:"-"`
 }
 
 func (e *Enemy) Create() error {
