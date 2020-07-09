@@ -18,7 +18,7 @@ export const createUser = (
       setToken(data);
       dispatch(getCurrentUser());
       dispatch({ type: ACTIONS.CREATE_USER_SUCCESS });
-      router.push("/");
+      router.push("/tasks");
     })
     .catch((errors) => {
       dispatch({ type: ACTIONS.CREATE_USER_ERROR, errors });
@@ -36,16 +36,17 @@ export const logIn = (email: string, password: string, router: NextRouter) => (
       setToken(data);
       dispatch(getCurrentUser());
       dispatch({ type: ACTIONS.LOGIN_USER_SUCCESS });
-      router.push("/");
+      router.push("/tasks");
     })
     .catch((errors) => {
       dispatch({ type: ACTIONS.LOGIN_USER_ERROR, errors });
     });
 };
 
-export const logOut = () => (dispatch) => {
+export const logOut = (router: NextRouter) => (dispatch) => {
   dispatch({ type: ACTIONS.LOGOUT_USER });
   deleteToken();
+  router.push("/");
 };
 
 function setToken(token) {
@@ -58,6 +59,9 @@ function setToken(token) {
 }
 
 function deleteToken() {
-  destroyCookie(null, "token");
+  destroyCookie(null, "token", {
+    domain: ".todo-zpg.com",
+    path: "/",
+  });
   removeAuthHeader();
 }

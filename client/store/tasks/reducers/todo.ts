@@ -1,4 +1,4 @@
-import { ITodo } from "../../../components/Todo";
+import { ITodo } from "../../../components/game/tasks/Todo";
 import actions from "../actions";
 
 interface IState {

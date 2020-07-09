@@ -1,12 +1,5 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import {
-  createStyles,
-  withStyles,
-  makeStyles,
-  Theme,
-  Hidden,
-} from "@material-ui/core";
+import React from "react";
+import { makeStyles, Theme } from "@material-ui/core";
 import { connect } from "react-redux";
 
 const useStyles = makeStyles<Theme, Props>(({ palette, breakpoints }) => ({

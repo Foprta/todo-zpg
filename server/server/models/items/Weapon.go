@@ -9,10 +9,11 @@ import (
 
 type Weapon struct {
 	gorm.Model
-	UserID uint `gorm:"not null" json:"-"`
-	TaskID uint `gorm:"unique" json:"-"`
-	Damage uint
-	DB     *gorm.DB `gorm:"-" json:"-"`
+	UserID   uint `gorm:"not null" json:"-"`
+	TaskID   uint `gorm:"unique" json:"-"`
+	Damage   uint
+	IsActive bool
+	DB       *gorm.DB `gorm:"-" json:"-"`
 }
 
 func (w *Weapon) Create() error {
@@ -31,7 +32,25 @@ func (w *Weapon) Update() error {
 }
 
 func (w *Weapon) Get() error {
-	return w.DB.Where("user_id = ?", w.UserID).Take(&w).Error
+	return w.DB.Where("user_id = ? AND id = ?", w.UserID, w.ID).Take(&w).Error
+}
+
+func (w *Weapon) Select() error {
+	var weapon Weapon
+	var oldWeapon Weapon
+	err := w.DB.Where("user_id = ? AND is_asctive = ?", w.UserID, true).Take(&oldWeapon).Error
+	oldWeapon.IsActive = false
+	err = w.DB.Save(&oldWeapon).Error
+	if err != nil {
+		return err
+	}
+	err = w.DB.Where("user_id = ? AND id = ?", w.UserID, w.ID).Take(&weapon).Error
+	if err != nil {
+		return err
+	}
+	weapon.IsActive = true
+	err = w.DB.Save(&weapon).Error
+	return err
 }
 
 // GetPlayerWeapons s

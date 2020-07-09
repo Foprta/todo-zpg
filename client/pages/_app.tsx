@@ -47,10 +47,13 @@ export class MyApp extends App<Props> {
 
   render() {
     const { Component, pageProps, store } = this.props;
+
+    const getLayout = Component["getLayout"] || ((page) => page);
+
     return (
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <Component {...pageProps} />
+          {getLayout(<Component {...pageProps}></Component>)}
         </Provider>
       </ThemeProvider>
     );

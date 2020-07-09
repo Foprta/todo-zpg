@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import { changeTodoState, deleteTodo } from "../store/tasks/actions/todo";
+import { changeTodoState, deleteTodo } from "../../../store/tasks/actions/todo";
 import { connect } from "react-redux";
 import { withStyles, createStyles } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";

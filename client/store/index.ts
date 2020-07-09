@@ -1,11 +1,13 @@
 import { applyMiddleware, combineReducers, compose, createStore } from "redux";
 import thunk from "redux-thunk";
+import playersReducers from "./players/reducers";
 import tasksReducers from "./tasks/reducers";
 import usersReducers from "./users/reducers";
 
 const appReducer = combineReducers({
   users: usersReducers,
   tasks: tasksReducers,
+  players: playersReducers,
 });
 
 const rootReducer = (state, action) => {

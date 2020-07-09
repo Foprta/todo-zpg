@@ -45,7 +45,7 @@ func (s *Server) DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) GetUserTodos(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetTodos(w http.ResponseWriter, r *http.Request) {
 	var userID uint
 	var err error
 	if userID, err = auth.ExtractTokenID(r); err != nil {

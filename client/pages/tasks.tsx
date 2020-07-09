@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getTodos, createTodo } from "../../store/tasks/actions/todo";
-import { logOut } from "../../store/users/actions/auth";
-import Todo, { ITodo } from "../Todo";
-import { withStyles, createStyles, Input } from "@material-ui/core";
-import Player from "./Player";
-import Enemy from "./Enemy";
+import { getTodos, createTodo } from "../store/tasks/actions/todo";
+import { logOut } from "../store/users/actions/auth";
+import Todo, { ITodo } from "../components/game/tasks/Todo";
+import Input from "@material-ui/core/Input";
+import { withStyles, createStyles } from "@material-ui/core/styles";
+import Layout from "../components/Layout";
+import { NextRouter, withRouter } from "next/router";
 
 const styles = ({ palette, breakpoints }) =>
   createStyles({
@@ -14,16 +15,6 @@ const styles = ({ palette, breakpoints }) =>
       flexDirection: "column",
       justifyContent: "stretch",
       alignItems: "stretch",
-      height: "100vh",
-    },
-    game: {
-      height: "30%",
-      display: "flex",
-      flexDirection: "row",
-      borderBottom: "1px solid black",
-    },
-    divider: {
-      width: "100%",
     },
     todos: {
       width: "300px",
@@ -41,31 +32,22 @@ interface Props {
   logOut: Function;
   classes: Record<string, any>;
   createTodo: Function;
+  router: NextRouter;
 }
 
-export class GameMain extends Component<Props> {
+export class Tasks extends Component<Props> {
   state = {
     newTodo: "",
-    ws: null,
-    gui: null,
   };
 
   componentDidMount() {
     this.props.getTodos();
-    const ws = new WebSocket("ws://api.todo-zpg.com/ws");
-    ws.onmessage = (evt) => {
-      let gui = JSON.parse(evt.data);
-      this.setState({ gui });
-    };
-    this.setState({ ws });
   }
 
-  componentWillUnmount() {
-    this.state.ws.close();
-  }
+  componentWillUnmount() {}
 
   logout = () => {
-    this.props.logOut();
+    this.props.logOut(this.props.router);
   };
 
   create = () => {
@@ -83,9 +65,7 @@ export class GameMain extends Component<Props> {
 
   render() {
     const { todos, classes } = this.props;
-    const { newTodo, gui } = this.state;
-
-    const { player, enemy } = Object(gui);
+    const { newTodo } = this.state;
 
     const todosMarkup = todos.length
       ? todos.map((todo) => <Todo key={todo.ID} todo={todo} />)
@@ -93,11 +73,6 @@ export class GameMain extends Component<Props> {
 
     return (
       <div className={classes.root}>
-        <div className={classes.game}>
-          <div>{player ? <Player player={player} /> : null}</div>
-          <div className={classes.divider}></div>
-          <div>{enemy ? <Enemy enemy={enemy} /> : null}</div>
-        </div>
         <div className={classes.todos}>
           <Input name="newTodo" value={newTodo} onChange={this.handleChange} />
           <button onClick={this.create}>Create</button>
@@ -115,7 +90,11 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = { getTodos, logOut, createTodo };
 
-export default connect(
+const Page = connect(
   mapStateToProps,
   mapDispatchToProps
-)(withStyles(styles)(GameMain));
+)(withStyles(styles)(withRouter(Tasks)));
+
+Page["getLayout"] = (page) => <Layout>{page}</Layout>;
+
+export default Page;
