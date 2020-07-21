@@ -3,27 +3,21 @@ package items
 import (
 	"fmt"
 
-	"github.com/Foprta/todo-zpg/server/server/models/players"
 	"github.com/jinzhu/gorm"
 )
 
 type Weapon struct {
 	gorm.Model
 	UserID   uint `gorm:"not null" json:"-"`
-	TaskID   uint `gorm:"unique" json:"-"`
 	Damage   uint
 	IsActive bool
+	TaskID   uint
 	DB       *gorm.DB `gorm:"-" json:"-"`
 }
 
-func (w *Weapon) Create() error {
-	player := players.Player{UserID: w.UserID, DB: w.DB}
-	err := player.Get()
-	if err != nil {
-		return err
-	}
-	fmt.Println(player)
-	w.Damage = player.Level
+func (w *Weapon) Create(playerLevel uint) error {
+	fmt.Println("created weapon")
+	w.Damage = playerLevel
 	return w.DB.Create(&w).Error
 }
 
@@ -35,10 +29,14 @@ func (w *Weapon) Get() error {
 	return w.DB.Where("user_id = ? AND id = ?", w.UserID, w.ID).Take(&w).Error
 }
 
+func (w *Weapon) GetCurrent() error {
+	return w.DB.Where("user_id = ? AND is_active = ?", w.UserID, true).Take(&w).Error
+}
+
 func (w *Weapon) Select() error {
 	var weapon Weapon
 	var oldWeapon Weapon
-	err := w.DB.Where("user_id = ? AND is_asctive = ?", w.UserID, true).Take(&oldWeapon).Error
+	err := w.DB.Where("user_id = ? AND is_active = ?", w.UserID, true).Take(&oldWeapon).Error
 	oldWeapon.IsActive = false
 	err = w.DB.Save(&oldWeapon).Error
 	if err != nil {

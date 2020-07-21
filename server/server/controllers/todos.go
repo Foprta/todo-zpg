@@ -9,6 +9,7 @@ import (
 
 	"github.com/Foprta/todo-zpg/server/server/auth"
 	"github.com/Foprta/todo-zpg/server/server/models/items"
+	"github.com/Foprta/todo-zpg/server/server/models/players"
 	"github.com/Foprta/todo-zpg/server/server/models/tasks"
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
@@ -87,14 +88,29 @@ func (s *Server) SetTodoState(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if todo.IsDone == true {
-		newWeapon := items.Weapon{UserID: userID, TaskID: todo.ID, DB: s.DB}
-		err = newWeapon.Create()
-		if err == nil {
-			weapon, _ := json.Marshal(newWeapon)
-			w.Write(weapon)
+	// Generate new item
+	if todo.IsDone == true && todo.IsItemGenerated == false {
+		player := players.Player{UserID: userID, DB: s.DB}
+		player.Get()
+		newWeapon, err := items.GenerateNewItem(s.DB, userID, player.Level, todo.ID)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
 		}
+		fmt.Println("weapon created")
+		todo.IsItemGenerated = true
+		err = todo.Update(s.DB)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+		fmt.Println("todo chaged")
+		weapon, _ := json.Marshal(newWeapon)
+		w.Write(weapon)
 	}
+	// Error handling
 	if err != nil {
 		fmt.Println(err)
 		if errTmp, ok := err.(*pq.Error); ok && errTmp.Code.Name() == "unique_violation" {

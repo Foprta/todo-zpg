@@ -6,9 +6,10 @@ import (
 
 type ToDo struct {
 	gorm.Model
-	UserID uint `gorm:"not null"`
-	IsDone bool
-	Text   string
+	UserID          uint `gorm:"not null"`
+	IsDone          bool
+	Text            string
+	IsItemGenerated bool
 }
 
 func (t *ToDo) Save(db *gorm.DB) (*ToDo, error) {
@@ -28,6 +29,7 @@ func (t *ToDo) Update(db *gorm.DB) error {
 		return err
 	}
 	todo.IsDone = t.IsDone
+	todo.IsItemGenerated = t.IsItemGenerated
 	err = db.Save(&todo).Error
 	return err
 }

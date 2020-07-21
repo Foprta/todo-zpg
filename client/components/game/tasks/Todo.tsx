@@ -27,7 +27,6 @@ export interface ITodo {
   IsDone: boolean;
   Text: string;
   ID: number;
-  changeTodoState: Function;
 }
 
 export interface Props {
@@ -64,7 +63,7 @@ export class Todo extends Component<Props> {
 
   render() {
     const {
-      todo: { Text, ID },
+      todo: { Text },
       classes,
     } = this.props;
 

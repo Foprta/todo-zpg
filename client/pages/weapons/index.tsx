@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getWeapons } from "../store/players/actions/player";
+import { getWeapons } from "../../store/players/actions/player";
 import { withStyles, createStyles } from "@material-ui/core/styles";
-import Layout from "../components/Layout";
+import Layout from "../../components/Layout";
+import Weapon from "../../components/game/weapons/Weapon";
 
 const styles = ({ palette, breakpoints }) =>
   createStyles({
@@ -30,7 +31,11 @@ export class Weapons extends Component<Props> {
   render() {
     const { weapons } = this.props;
 
-    return <div>{weapons.toString()}</div>;
+    const weaponsMarkup = weapons
+      ? weapons.map((weapon) => <Weapon weapon={weapon}></Weapon>)
+      : "Оружий нет";
+
+    return <div>{weaponsMarkup}</div>;
   }
 }
 

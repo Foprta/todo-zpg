@@ -9,7 +9,7 @@ import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import globalStyles, { themeColors } from "../utils/theme";
 import { parseCookies } from "nookies";
 import { getCurrentUser } from "../store/users/actions/user";
-import securedAxios, { addAuthHeader } from "../utils/axios";
+import { addAuthHeader } from "../utils/axios";
 
 const theme = createMuiTheme(themeColors);
 
@@ -21,10 +21,13 @@ export class MyApp extends App<Props> {
   static async getInitialProps({ Component, ctx }) {
     if (ctx.isServer) {
       const { token } = parseCookies(ctx);
-      console.log(token);
       if (token) {
         addAuthHeader(token);
         await ctx.store.dispatch(getCurrentUser());
+      }
+      if (!token && ctx.req.url != "/") {
+        ctx.res.writeHead(302, { Location: "/" });
+        ctx.res.end();
       }
     }
 
@@ -39,6 +42,7 @@ export class MyApp extends App<Props> {
 
   UNSAFE_componentWillMount() {
     // FIXME: how to addAuthToken properly?
+
     const { token } = parseCookies();
     if (token) {
       addAuthHeader(token);

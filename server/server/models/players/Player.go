@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Foprta/todo-zpg/server/server/models/enemies"
+	"github.com/Foprta/todo-zpg/server/server/models/items"
 	"github.com/Foprta/todo-zpg/server/server/utils"
 
 	"github.com/jinzhu/gorm"
@@ -20,6 +21,7 @@ type Player struct {
 	Level      uint
 	State      uint
 	Experience uint
+	Damage     uint
 	Events     playerEventsChannel `gorm:"-" json:"-"`
 	IsOnline   *uint               `gorm:"-" json:"-"`
 	DB         *gorm.DB            `gorm:"-" json:"-"`
@@ -104,14 +106,14 @@ func (p *Player) onlineSetFighting() GUI {
 }
 
 func (p *Player) setFighting(enemy *enemies.Enemy) {
-	enemy.Health = 100
-	enemy.MaxHealth = 100
+	enemy.Health = int(p.Level)
+	enemy.MaxHealth = int(p.Level)
 	enemy.Level = p.Level
 	p.State = fighting
 }
 
 func (p *Player) fight(enemy *enemies.Enemy) GUI {
-	enemy.Health -= int(p.Level * 10)
+	enemy.Health -= int(p.Damage)
 	p.Health -= int(enemy.Level)
 	if enemy.Health <= 0 {
 		p.addExp(enemy.Level)
@@ -179,8 +181,24 @@ func (p *Player) levelUp() GUI {
 	return GUI{P: p}
 }
 
-// Generating events after being offline
+// Items handling
+func (p *Player) RecalculateStats() error {
+	var weapon = items.Weapon{UserID: p.UserID, DB: p.DB}
+	err := weapon.GetCurrent()
+	if err != nil {
+		return err
+	}
+	fmt.Println("weapon found")
+	p.Damage = weapon.Damage
+	err = p.Update()
+	if err != nil {
+		return err
+	}
+	fmt.Println("")
+	return nil
+}
 
+// Generating events after being offline
 func (p *Player) GenerateOfflineEvents() {
 	p.DB.Where("user_id = ?", p.UserID).Take(&p)
 	enemy := &enemies.Enemy{UserID: p.UserID, DB: p.DB}

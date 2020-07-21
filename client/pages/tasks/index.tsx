@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getTodos, createTodo } from "../store/tasks/actions/todo";
-import { logOut } from "../store/users/actions/auth";
-import Todo, { ITodo } from "../components/game/tasks/Todo";
+import { getTodos, createTodo } from "../../store/tasks/actions/todo";
+import { logOut } from "../../store/users/actions/auth";
+import Todo, { ITodo } from "../../components/game/tasks/Todo";
 import Input from "@material-ui/core/Input";
 import { withStyles, createStyles } from "@material-ui/core/styles";
-import Layout from "../components/Layout";
+import Layout from "../../components/Layout";
 import { NextRouter, withRouter } from "next/router";
 
 const styles = ({ palette, breakpoints }) =>

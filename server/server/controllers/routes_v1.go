@@ -18,6 +18,5 @@ func (s *Server) ApiV1Handlers(router *mux.Router) {
 	router.HandleFunc("/todos/{id:[0-9]+}", middlewares.AuthMiddleware(s.DeleteTodo)).Methods("DELETE", "OPTIONS")
 	// PLAYERS
 	router.HandleFunc("/players/weapons", middlewares.AuthMiddleware(s.GetWeapons)).Methods("GET", "OPTIONS")
-	router.HandleFunc("/players/weapons/select/{id:[0-9]}", middlewares.AuthMiddleware(s.SelectWeapon)).Methods("GET", "OPTIONS")
-
+	router.HandleFunc("/players/weapons/select/{id:[0-9]+}", middlewares.AuthMiddleware(s.SelectWeapon)).Methods("GET", "OPTIONS")
 }
